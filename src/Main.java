@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.concurrent.ForkJoinPool;
 
 public class Main {
 
@@ -7,7 +8,12 @@ public class Main {
         String folderPath = "C:\\Users\\Алексей\\Desktop\\IT";
         File file = new File(folderPath);
 
-        System.out.println(getFolderSize(file));
+        FolderSizeCalculator calculator = new FolderSizeCalculator(file);
+        ForkJoinPool pool = new ForkJoinPool(); // позволяет запускать множество потоков
+        Long size = pool.invoke(calculator);
+        System.out.println(size);
+
+        /*System.out.println(getFolderSize(file));*/
     }
 
     public static long getFolderSize(File folder){
