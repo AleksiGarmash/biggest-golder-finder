@@ -6,16 +6,19 @@ import java.util.concurrent.RecursiveTask;
 /**Многопоточный класс работы с папками/файлами**/
 public class FolderSizeCalculator extends RecursiveTask<Long> {
 
-    private File folder;
+    private Node node;
 
-    public FolderSizeCalculator(File folder) {
-        this.folder = folder;
+    public FolderSizeCalculator(Node node) {
+        this.node = node;
     }
 
     @Override
     protected Long compute() {
+        File folder = node.getFolder();
         if (folder.isFile()){
-            return folder.length();
+            long length = folder.length();
+            node.setSize(length);
+            return length;
         }
 
         long sum = 0;
@@ -23,14 +26,18 @@ public class FolderSizeCalculator extends RecursiveTask<Long> {
 
         File[] files = folder.listFiles();
         for (File file : files) {
-            FolderSizeCalculator task = new FolderSizeCalculator(file);
+            Node child = new Node(file);
+            FolderSizeCalculator task = new FolderSizeCalculator(child);
             task.fork(); // асинхронный запуск потоков
             subTasks.add(task);
+            node.addChild(child);
         }
 
         for (FolderSizeCalculator task : subTasks){
             sum += task.join(); // выполнение задачи, прибавляется результат
         }
+
+        node.setSize(sum);
 
         return sum;
     }
