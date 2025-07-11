@@ -1,15 +1,14 @@
 import java.io.File;
-import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
 
     public static void main(String[] args) {
 
+        ParametersBag bag = new ParametersBag(args);
 
-
-        String folderPath = "C:\\Users\\Алексей\\Desktop";
-        int limit = 50 * 1024 * 1024;
+        String folderPath = bag.getPath();
+        long limit = bag.getLimit();
 
         File file = new File(folderPath);
         Node root = new Node(file, limit);
